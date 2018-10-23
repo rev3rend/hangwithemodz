@@ -15,7 +15,7 @@ FASTLED_USING_NAMESPACE
 #warning "Requires FastLED 3.1 or later; check github for latest code."
 #endif
 
-#define DATA_PIN    3
+#define DATA_PIN    7
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
@@ -33,10 +33,15 @@ CRGB leds[NUM_LEDS];
 #define BRIGHTNESS          96
 #define FRAMES_PER_SECOND  120
 
+int x, y, v;
+int h = 0;
+int s = 255;
+  
+
 void setup() {
   delay(3000); // 3 second delay for recovery
 
-  Serial.begin(115200); // turns on the serial - 9600 is the baud rate
+  Serial.begin(9600); // turns on the serial - 9600 is the baud rate
 
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -48,23 +53,25 @@ void setup() {
 
 void loop()
 {
-  int h = 0;
-  int s = 255;
-  
   // SERIAL IN FROM COMPUTER TO ARDUINO:
   if (Serial.available()) {
      // look for the next valid integer in the incoming serial stream:
-    int x = Serial.parseInt();
+    x = Serial.parseInt();
     // do it again:
-    int y = Serial.parseInt();
+    y = Serial.parseInt();
     // do it again:
-    int v = Serial.parseInt();
+    v = Serial.parseInt();
     if (Serial.read() == '\n') {
       leds[XY(x, y)] = CHSV(h, s, v);
+     Serial.println("got it!");
     }
+  }
 
-}
-
+    Serial.print(x);
+    Serial.print(" ");
+    Serial.print(y);
+    Serial.print(" ");
+    Serial.println(v);
 
   // send the 'leds' array out to the actual LED strip
   FastLED.show();  
